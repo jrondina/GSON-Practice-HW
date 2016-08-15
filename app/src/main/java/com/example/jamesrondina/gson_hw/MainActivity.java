@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -24,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
 
     private String TAG = "MainActivity";
 
-    private static String mUrl = "https://api.thingspeak.com/channels/12397/fields/4/last_data_age.json";
+    private static String mUrl = "https://api.thingspeak.com/channels/124877/fields/1.json?results=200";
 
     private DataAsyncTask mTask;
     private ArrayAdapter<Datapoint> mAdapter;
@@ -34,7 +35,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mAdapter = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,new ArrayList<Datapoint>());
+        mAdapter = new ArrayAdapter<Datapoint>(this,android.R.layout.simple_list_item_2,
+                android.R.id.text1, new ArrayList<Datapoint>());
 
         ListView listView = (ListView) findViewById(R.id.listView);
         listView.setAdapter(mAdapter);
@@ -42,7 +44,11 @@ public class MainActivity extends AppCompatActivity {
 
         ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+
         if (networkInfo != null && networkInfo.isConnected()) {
+
+            Toast.makeText(MainActivity.this, "Connected", Toast.LENGTH_SHORT).show();
+
             if (mTask != null && (mTask.getStatus() != AsyncTask.Status.FINISHED)) {
                 mTask.cancel(true);
             }
@@ -89,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(DataList list) {
             super.onPostExecute(list);
             mAdapter.clear();
-            mAdapter.addAll(list.getDatapoints());
+            mAdapter.addAll(list.getFeeds());
         }
     }
 }
